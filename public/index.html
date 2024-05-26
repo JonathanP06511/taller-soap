@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Información del País</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Información del País</h1>
+    <div>
+        <label for="code">Código del País (ISO):</label>
+        <input type="text" id="code" name="code" placeholder="Ingrese el código ISO del país">
+        <button onclick="getCountryInfo()">Obtener Información</button>
+    </div>
+    <div id="country-info"></div>
+
+    <script>
+        function getCountryInfo() {
+            const code = document.getElementById('code').value;
+            fetch(`/country?code=${code}`)
+                .then(response => response.json())
+                .then(data => {
+                    displayCountryInfo(data);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        function displayCountryInfo(data) {
+            const info = data.FullCountryInfoResult;
+            const languages = info.Languages.tLanguage.map(lang => lang.sName).join(', ');
+
+            document.getElementById('country-info').innerHTML = `
+                <h2>${info.sName}</h2>
+                <p><strong>Código ISO:</strong> ${info.sISOCode}</p>
+                <p><strong>Capital:</strong> ${info.sCapitalCity}</p>
+                <p><strong>Código Telefónico:</strong> ${info.sPhoneCode}</p>
+                <p><strong>Continente:</strong> ${info.sContinentCode}</p>
+                <p><strong>Moneda:</strong> ${info.sCurrencyISOCode}</p>
+                <p><strong>Idiomas:</strong> ${languages}</p>
+                <p><strong>Bandera:</strong><br> <img src="${info.sCountryFlag}" alt="Bandera de ${info.sName}" width="100"></p>
+            `;
+        }
+    </script>
+</body>
+</html>
